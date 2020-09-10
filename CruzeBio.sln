@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30428.66
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CruzeBio", "CruzeBio\CruzeBio.csproj", "{23DD3C8E-3401-4114-8104-082B61168288}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CruzeBio.Shared", "CruzeBio.Shared\CruzeBio.Shared.shproj", "{4DEA2760-6ADE-4563-BDBF-441F811CE8B6}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		CruzeBio.Shared\CruzeBio.Shared.projitems*{23dd3c8e-3401-4114-8104-082b61168288}*SharedItemsImports = 4
+		CruzeBio.Shared\CruzeBio.Shared.projitems*{4dea2760-6ade-4563-bdbf-441f811ce8b6}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23DD3C8E-3401-4114-8104-082B61168288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23DD3C8E-3401-4114-8104-082B61168288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23DD3C8E-3401-4114-8104-082B61168288}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{23DD3C8E-3401-4114-8104-082B61168288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23DD3C8E-3401-4114-8104-082B61168288}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23DD3C8E-3401-4114-8104-082B61168288}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C98A1CD9-3716-4CF0-889D-145318BC39E3}
+	EndGlobalSection
+EndGlobal
