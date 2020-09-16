@@ -12,12 +12,14 @@ namespace CruzeBio.Shared
 {
     public static class CruzeBioHelper
     {
+        const string FACE_ENDPOINT = @"";
+        const string FACE_SUBSCRIPTION_KEY = @"";
 
         // Used in the Detect Faces and Verify examples.
-// Recognition model 3 is used for feature extraction, use 1 to simply recognize/detect a face. 
-// However, the API calls to Detection that are used with Verify, Find Similar, or Identify must share the same recognition model.
-const string RECOGNITION_MODEL3 = RecognitionModel.Recognition03;
-const string RECOGNITION_MODEL1 = RecognitionModel.Recognition01;
+        // Recognition model 3 is used for feature extraction, use 1 to simply recognize/detect a face. 
+        // However, the API calls to Detection that are used with Verify, Find Similar, or Identify must share the same recognition model.
+        const string RECOGNITION_MODEL3 = RecognitionModel.Recognition03;
+        const string RECOGNITION_MODEL1 = RecognitionModel.Recognition01;
 
         static string sourcePersonGroup = null;
         static IFaceClient faceClient;
