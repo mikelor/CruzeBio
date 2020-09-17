@@ -89,7 +89,7 @@ namespace CruzeBio.Shared
             IdentifyRequest identifyRequest = new IdentifyRequest()
             {
                 CarrierCode = "AS",
-                FlightNumber = "1275",
+                FlightNumber = "1276",
                 ScheduledEncounterPort = "LAS",
                 ScheduledEncounterDate = "20200716",
                 PhotoDate = "20200716",
