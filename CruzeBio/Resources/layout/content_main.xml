@@ -1,19 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_main">
-    <CruzeBio.CameraSourcePreview
+    tools:showIn="@layout/activity_main"
+    android:orientation="vertical">
+        <ImageView
+        android:src="@drawable/fail"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="10dp"
+        android:id="@+id/authenticationStatusImageView"
+        android:contentDescription="description"
+        android:visibility="visible" />
+        <TextView
+            android:layout_toRightOf="@+id/authenticationStatusImageView"
+            android:paddingTop="15dp"
+            android:paddingLeft="10dp"
+            android:text="Large Text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:id="@+id/statusText"
+        />
+        <CruzeBio.CameraSourcePreview
         android:id="@+id/preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="500dp"
+        android:layout_height="580dp"
+        android:layout_alignParentBottom="true">
         <CruzeBio.GraphicOverlay
             android:id="@+id/faceOverlay"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent" 
+            android:layout_alignParentBottom="true"/>
     </CruzeBio.CameraSourcePreview>
-
 </RelativeLayout>

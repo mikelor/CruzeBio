@@ -12,6 +12,7 @@ using Android.Support.V4.App;
 using Android.Support.V7.App;
 using Android.Util;
 using Android.Views;
+using Android.Widget;
 using CruzeBio.Data;
 using CruzeBio.Models;
 using CruzeBio.Shared;
@@ -36,8 +37,16 @@ namespace CruzeBio
         private CameraSource mCameraSource = null;
         private CameraSourcePreview mPreview;
         private GraphicOverlay mGraphicOverlay;
+        private ImageView mAuthenticationStatusImageView;
+        private TextView mStatusText;
 
-        public static string GreetingsText
+        public static TextView StatusText
+        {
+            get;
+            set;
+        }
+
+        public static ImageView StatusImage
         {
             get;
             set;
@@ -55,8 +64,16 @@ namespace CruzeBio
             Android.Support.V7.Widget.Toolbar toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
 
+            // Wire up the controls
             mPreview = FindViewById<CameraSourcePreview>(Resource.Id.preview);
             mGraphicOverlay = FindViewById<GraphicOverlay>(Resource.Id.faceOverlay);
+            mStatusText = FindViewById<TextView>(Resource.Id.statusText);
+
+            mAuthenticationStatusImageView = FindViewById<ImageView>(Resource.Id.authenticationStatusImageView);
+            mAuthenticationStatusImageView.Visibility = ViewStates.Visible;
+
+            StatusImage = mAuthenticationStatusImageView;
+            StatusText = mStatusText;
 
             FloatingActionButton fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
             fab.Click += FabOnClick;
@@ -65,7 +82,10 @@ namespace CruzeBio
             {
                 CreateCameraSource();
                 CruzeBioHelper.Init();
-                CruzeBioHelper.GreetingsCallback = (s) => { RunOnUiThread(()=> GreetingsText = s ); };
+                CruzeBioHelper.AuthenticationStatusImageCallback = (resourceId) => { RunOnUiThread(() =>
+                    MainActivity.StatusImage.SetImageResource(resourceId));
+                    //mStatusText.Text = StatusText;
+                    };
                 await CruzeBioHelper.RegisterFaces();
             }
             else { RequestCameraPermission(); }
@@ -113,7 +133,7 @@ namespace CruzeBio
         private void FabOnClick(object sender, EventArgs eventArgs)
         {
             View view = (View) sender;
-            Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong)
+            Snackbar.Make(view, "An Upcoming Feature", Snackbar.LengthLong)
                 .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
         }
 
@@ -227,15 +247,12 @@ namespace CruzeBio
         private bool isProcessing = false;
 
 
-        public static CruzeServices CruzeApi { get; private set; }
-
+    
         public GraphicFaceTracker(GraphicOverlay overlay, CameraSource cameraSource = null)
         {
             mOverlay = overlay;
             mFaceGraphic = new FaceGraphic(overlay);
             mCameraSource = cameraSource;
-
-            CruzeApi = new CruzeServices(new RestService());
         }
 
         public override void OnNewItem(int id, Java.Lang.Object item)
@@ -276,6 +293,7 @@ namespace CruzeBio
             MemoryStream stream = new MemoryStream();
             rotatedBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, stream);
             byte[] newpicdata  = stream.ToArray();
+            
             Task.Run(async () =>
             {
 
@@ -285,39 +303,8 @@ namespace CruzeBio
                     isProcessing = true;
                    
                     Console.WriteLine("face detected: ");
+                    await CruzeBioHelper.ProcessCameraCapture(newpicdata);
 
-                    string base64 = System.Convert.ToBase64String(newpicdata);
-                    string origbase64 = System.Convert.ToBase64String(data);
-
-                    IdentifyRequest identifyRequest = new IdentifyRequest()
-                    {
-                        CarrierCode = "AS",
-                        FlightNumber = "1275",
-                        ScheduledEncounterPort = "LAS",
-                        ScheduledEncounterDate = "20200716",
-                        PhotoDate = "20200716",
-                        DeviceId = "Device1",
-                        DepartureTerminal = "3",
-                        DepartureGate = "E8",
-                        Photo = base64,
-                        Token = "MyToken"
-                    };
-                    IdentifyResponse identifyResponse = await CruzeApi.IdentifyAsync(identifyRequest);
-                    if (!String.IsNullOrEmpty(identifyResponse.Result))
-                    {
-                        if (identifyResponse.Result.Equals("Match"))
-                        {
-                            Console.WriteLine("Match");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Nope");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No Face Detected or Poor Image");
-                    }
                 }
                 finally
                 {

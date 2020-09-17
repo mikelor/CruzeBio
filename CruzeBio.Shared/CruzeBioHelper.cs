@@ -2,11 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using Android.Net.Wifi.Aware;
+using CruzeBio.Data;
+using CruzeBio.Models;
 
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using IdentifyRequest = CruzeBio.Models.IdentifyRequest;
 
 namespace CruzeBio.Shared
 {
@@ -17,6 +22,8 @@ namespace CruzeBio.Shared
 
         static string sourcePersonGroup = null;
         static IFaceClient faceClient;
+        public static CruzeServices CruzeApi { get; private set; }
+
         public static bool IsFaceRegistered { get; set; }
 
         public static bool IsInitialized { get; set; }
@@ -26,9 +33,11 @@ namespace CruzeBio.Shared
             get;
             set;
         }
-        public static Action<string> GreetingsCallback { get => greetingsCallback; set => greetingsCallback = value; }
 
-        private static Action<string> greetingsCallback;
+      
+        public static Action<int> AuthenticationStatusImageCallback { get => authenticationStatusImageCallback; set => authenticationStatusImageCallback = value; }
+
+        private static Action<int>authenticationStatusImageCallback;
 
         public static IFaceClient Authenticate(string endpoint, string key)
         {
@@ -37,6 +46,7 @@ namespace CruzeBio.Shared
         public static void Init(Action throttled = null)
         {
             // Authenticate.
+            CruzeApi = new CruzeServices(new RestService());
             faceClient = Authenticate(FACE_ENDPOINT, FACE_SUBSCRIPTION_KEY);
             WorkspaceKey = Guid.NewGuid().ToString();
             IsInitialized = true;
@@ -68,81 +78,52 @@ namespace CruzeBio.Shared
             }
 
         }
-        /*
-        public static async Task ProcessCameraCapture(ImageAnalyzer e)
+
+        public static async Task ProcessCameraCapture(byte[] data)
         {
+            MainActivity.StatusText.Text = "Calling Traveler Verification Service";
+            MainActivity.StatusImage.SetImageResource(Resource.Drawable.Refresh);
 
-            DateTime start = DateTime.Now;
+            string base64 = System.Convert.ToBase64String(data);
 
-            await e.DetectFacesAsync();
-
-            if (e.DetectedFaces.Any())
+            IdentifyRequest identifyRequest = new IdentifyRequest()
             {
-                await e.IdentifyFacesAsync();
-                string greetingsText = GetGreettingFromFaces(e);
-
-                if (e.IdentifiedPersons.Any())
+                CarrierCode = "AS",
+                FlightNumber = "1275",
+                ScheduledEncounterPort = "LAS",
+                ScheduledEncounterDate = "20200716",
+                PhotoDate = "20200716",
+                DeviceId = "Device1",
+                DepartureTerminal = "3",
+                DepartureGate = "E8",
+                Photo = base64,
+                Token = "MyToken"
+            };
+            IdentifyResponse identifyResponse = await CruzeApi.IdentifyAsync(identifyRequest);
+            string statusText = "";
+            int resourceId = 0;
+            if (!String.IsNullOrEmpty(identifyResponse.Result))
+            {
+                statusText = string.Format($"{identifyResponse.Result} - UID={identifyResponse.UID}");
+                
+                if (identifyResponse.Result.Equals("Match"))
                 {
-
-                    if (greetingsCallback != null)
-                    {
-                        DisplayMessage(greetingsText);
-                    }
-
-                    Console.WriteLine(greetingsText);
+                    resourceId = Resource.Drawable.Pass;
                 }
                 else
                 {
-                    DisplayMessage("No Idea, who you're.. Register your face.");
-
-                    Console.WriteLine("No Idea");
-
+                    resourceId = Resource.Drawable.Fail;
                 }
             }
             else
             {
-               // DisplayMessage("No face detected.");
-
-                Console.WriteLine("No Face ");
-
+                resourceId = Resource.Drawable.Fail;
+                statusText = string.Format($"No Face Detected or Poor Image");
             }
+            MainActivity.StatusText.Text = statusText;
+            authenticationStatusImageCallback?.Invoke(resourceId);
 
-            TimeSpan latency = DateTime.Now - start;
-            var latencyString = string.Format("Face API latency: {0}ms", (int)latency.TotalMilliseconds);
-            Console.WriteLine(latencyString);
         }
 
-        private static string GetGreettingFromFaces(ImageAnalyzer img)
-        {
-            if (img.IdentifiedPersons.Any())
-            {
-                string names = img.IdentifiedPersons.Count() > 1 ? string.Join(", ", img.IdentifiedPersons.Select(p => p.Person.Name)) : img.IdentifiedPersons.First().Person.Name;
-
-                if (img.DetectedFaces.Count() > img.IdentifiedPersons.Count())
-                {
-                    return string.Format("Welcome back, {0} and company!", names);
-                }
-                else
-                {
-                    return string.Format("Welcome back, {0}!", names);
-                }
-            }
-            else
-            {
-                if (img.DetectedFaces.Count() > 1)
-                {
-                    return "Hi everyone! If I knew any of you by name I would say it...";
-                }
-                else
-                {
-                    return "Hi there! If I knew you by name I would say it...";
-                }
-            }
-        }
-        */
-        static void DisplayMessage(string greetingsText)
-        {
-            greetingsCallback?.Invoke(greetingsText);
-        }
     }
 }
