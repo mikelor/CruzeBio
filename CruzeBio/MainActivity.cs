@@ -3,8 +3,8 @@ using Android.App;
 using Android.Content.PM;
 using Android.Gms.Common;
 using Android.Gms.Vision;
-using static Android.Gms.Vision.MultiProcessor;
 using Android.Gms.Vision.Faces;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
@@ -12,11 +12,15 @@ using Android.Support.V4.App;
 using Android.Support.V7.App;
 using Android.Util;
 using Android.Views;
-
+using CruzeBio.Data;
+using CruzeBio.Models;
+using CruzeBio.Shared;
+using Microsoft.Azure.CognitiveServices.Vision.Face;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
-using CruzeBio.Shared;
+using static Android.Gms.Vision.MultiProcessor;
 
 namespace CruzeBio
 {
@@ -43,6 +47,9 @@ namespace CruzeBio
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+
+
+
             SetContentView(Resource.Layout.activity_main);
 
             Android.Support.V7.Widget.Toolbar toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
@@ -168,11 +175,9 @@ namespace CruzeBio
 
             mCameraSource = new CameraSource.Builder(context, detector)
                     .SetRequestedPreviewSize(640, 480)
-                    .SetFacing(CameraFacing.Back)
+                    .SetFacing(CameraFacing.Front)
                     .SetRequestedFps(30.0f)
                     .Build();
-
-
         }
 
         /**
@@ -221,11 +226,16 @@ namespace CruzeBio
         private CameraSource mCameraSource = null;
         private bool isProcessing = false;
 
+
+        public static CruzeServices CruzeApi { get; private set; }
+
         public GraphicFaceTracker(GraphicOverlay overlay, CameraSource cameraSource = null)
         {
             mOverlay = overlay;
             mFaceGraphic = new FaceGraphic(overlay);
             mCameraSource = cameraSource;
+
+            CruzeApi = new CruzeServices(new RestService());
         }
 
         public override void OnNewItem(int id, Java.Lang.Object item)
@@ -257,24 +267,61 @@ namespace CruzeBio
 
         public void OnPictureTaken(byte[] data)
         {
+            Matrix m = new Matrix();
+            m.PostRotate(270);
+
+
+            Bitmap scaledBitmap = Bitmap.CreateScaledBitmap((BitmapFactory.DecodeByteArray(data, 0, data.Length)), 640, 480, false);
+            Bitmap rotatedBitmap = Bitmap.CreateBitmap(scaledBitmap, 0, 0, scaledBitmap.Width, scaledBitmap.Height, m, false);
+            MemoryStream stream = new MemoryStream();
+            rotatedBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, stream);
+            byte[] newpicdata  = stream.ToArray();
             Task.Run(async () =>
             {
+
+
                 try
                 {
                     isProcessing = true;
-
+                   
                     Console.WriteLine("face detected: ");
-                    /*
-                    var imageAnalyzer = new ImageAnalyzer(data);
-                    await CruzeBioHelper.ProcessCameraCapture(imageAnalyzer);
-                    */
-                }
 
+                    string base64 = System.Convert.ToBase64String(newpicdata);
+                    string origbase64 = System.Convert.ToBase64String(data);
+
+                    IdentifyRequest identifyRequest = new IdentifyRequest()
+                    {
+                        CarrierCode = "AS",
+                        FlightNumber = "1275",
+                        ScheduledEncounterPort = "LAS",
+                        ScheduledEncounterDate = "20200716",
+                        PhotoDate = "20200716",
+                        DeviceId = "Device1",
+                        DepartureTerminal = "3",
+                        DepartureGate = "E8",
+                        Photo = base64,
+                        Token = "MyToken"
+                    };
+                    IdentifyResponse identifyResponse = await CruzeApi.IdentifyAsync(identifyRequest);
+                    if (!String.IsNullOrEmpty(identifyResponse.Result))
+                    {
+                        if (identifyResponse.Result.Equals("Match"))
+                        {
+                            Console.WriteLine("Match");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Nope");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No Face Detected or Poor Image");
+                    }
+                }
                 finally
                 {
                     isProcessing = false;
-
-
                 }
 
             });

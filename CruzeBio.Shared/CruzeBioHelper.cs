@@ -12,8 +12,8 @@ namespace CruzeBio.Shared
 {
     public static class CruzeBioHelper
     {
-        const string FACE_ENDPOINT = @"https://cruze-cognitive-face-test.cognitiveservices.azure.com/";
-        const string FACE_SUBSCRIPTION_KEY = @"2aaf3f27e36d44e28ff432b5a5852ac7";
+        const string FACE_ENDPOINT = @"";
+        const string FACE_SUBSCRIPTION_KEY = @"";
 
         static string sourcePersonGroup = null;
         static IFaceClient faceClient;
@@ -38,19 +38,7 @@ namespace CruzeBio.Shared
         {
             // Authenticate.
             faceClient = Authenticate(FACE_ENDPOINT, FACE_SUBSCRIPTION_KEY);
-
-            /*
-            FaceServiceHelper.ApiKey = "b1843365b41247538cffb304d36609b3";
-            if(throttled!=null)
-            FaceServiceHelper.Throttled += throttled;
-            */
-
             WorkspaceKey = Guid.NewGuid().ToString();
-
-            /*
-            ImageAnalyzer.PeopleGroupsUserDataFilter = WorkspaceKey;
-            FaceListManager.FaceListsUserDataFilter = WorkspaceKey;
-            */
             IsInitialized = true;
         }
 

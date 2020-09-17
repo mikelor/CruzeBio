@@ -63,8 +63,16 @@
   <ItemGroup>
     <Compile Include="Camera\CameraSourcePreview.cs" />
     <Compile Include="Camera\GraphicOverlay.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Data\CruzeServices.cs" />
+    <Compile Include="Data\IRestService.cs" />
+    <Compile Include="Data\RestService.cs" />
     <Compile Include="FaceGraphic.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="Models\IdentifyRequest.cs" />
+    <Compile Include="Models\IdentifyResponse.cs" />
+    <Compile Include="Models\LoginRequest.cs" />
+    <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -112,6 +120,9 @@
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face">
       <Version>2.6.0-preview.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>4.7.2</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.3" />
@@ -122,6 +133,11 @@
   </ItemGroup>
   <Import Project="..\CruzeBio.Shared\CruzeBio.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties XamarinHotReloadDebuggerTimeoutExceptionCruzeBioHideInfoBar="True" TriggeredFromHotReload="False" />
+    </VisualStudio>
+  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
