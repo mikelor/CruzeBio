@@ -4519,28 +4519,40 @@ namespace CruzeBio
 			public const int hide_bottom_view_on_scroll_behavior = 2131624001;
 			
 			// aapt resource value: 0x7F0E0042
-			public const int mtrl_chip_close_icon_content_description = 2131624002;
+			public const int low_storage_error = 2131624002;
 			
 			// aapt resource value: 0x7F0E0043
-			public const int password_toggle_content_description = 2131624003;
+			public const int mtrl_chip_close_icon_content_description = 2131624003;
 			
 			// aapt resource value: 0x7F0E0044
-			public const int path_password_eye = 2131624004;
+			public const int no_camera_permission = 2131624004;
 			
 			// aapt resource value: 0x7F0E0045
-			public const int path_password_eye_mask_strike_through = 2131624005;
+			public const int ok = 2131624005;
 			
 			// aapt resource value: 0x7F0E0046
-			public const int path_password_eye_mask_visible = 2131624006;
+			public const int password_toggle_content_description = 2131624006;
 			
 			// aapt resource value: 0x7F0E0047
-			public const int path_password_strike_through = 2131624007;
+			public const int path_password_eye = 2131624007;
 			
 			// aapt resource value: 0x7F0E0048
-			public const int search_menu_title = 2131624008;
+			public const int path_password_eye_mask_strike_through = 2131624008;
 			
 			// aapt resource value: 0x7F0E0049
-			public const int status_bar_notification_info_overflow = 2131624009;
+			public const int path_password_eye_mask_visible = 2131624009;
+			
+			// aapt resource value: 0x7F0E004A
+			public const int path_password_strike_through = 2131624010;
+			
+			// aapt resource value: 0x7F0E004B
+			public const int permission_camera_rationale = 2131624011;
+			
+			// aapt resource value: 0x7F0E004C
+			public const int search_menu_title = 2131624012;
+			
+			// aapt resource value: 0x7F0E004D
+			public const int status_bar_notification_info_overflow = 2131624013;
 			
 			static String()
 			{

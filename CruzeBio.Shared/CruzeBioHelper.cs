@@ -12,14 +12,8 @@ namespace CruzeBio.Shared
 {
     public static class CruzeBioHelper
     {
-        const string FACE_ENDPOINT = @"";
-        const string FACE_SUBSCRIPTION_KEY = @"";
-
-        // Used in the Detect Faces and Verify examples.
-        // Recognition model 3 is used for feature extraction, use 1 to simply recognize/detect a face. 
-        // However, the API calls to Detection that are used with Verify, Find Similar, or Identify must share the same recognition model.
-        const string RECOGNITION_MODEL3 = RecognitionModel.Recognition03;
-        const string RECOGNITION_MODEL1 = RecognitionModel.Recognition01;
+        const string FACE_ENDPOINT = @"https://cruze-cognitive-face-test.cognitiveservices.azure.com/";
+        const string FACE_SUBSCRIPTION_KEY = @"2aaf3f27e36d44e28ff432b5a5852ac7";
 
         static string sourcePersonGroup = null;
         static IFaceClient faceClient;
@@ -45,75 +39,48 @@ namespace CruzeBio.Shared
             // Authenticate.
             faceClient = Authenticate(FACE_ENDPOINT, FACE_SUBSCRIPTION_KEY);
 
+            /*
             FaceServiceHelper.ApiKey = "b1843365b41247538cffb304d36609b3";
             if(throttled!=null)
             FaceServiceHelper.Throttled += throttled;
+            */
 
             WorkspaceKey = Guid.NewGuid().ToString();
+
+            /*
             ImageAnalyzer.PeopleGroupsUserDataFilter = WorkspaceKey;
             FaceListManager.FaceListsUserDataFilter = WorkspaceKey;
-
+            */
             IsInitialized = true;
         }
 
         public static async Task RegisterFaces()
         {
-
-
             try
             {
-                // Create a person group. 
-                string personGroupId = Guid.NewGuid().ToString();
-                sourcePersonGroup = personGroupId; // This is solely for the snapshot operations example
-                Console.WriteLine($"Create a person group ({personGroupId}).");
-                await faceClient.PersonGroup.CreateAsync(personGroupId, personGroupId, recognitionModel: recognitionModel);
-                // The similar faces will be grouped into a single person group person.
-                foreach (var groupedFace in personDictionary.Keys)
-                {
-                    // Limit TPS
-                    await Task.Delay(250);
-                    Person person = await client.PersonGroupPerson.CreateAsync(personGroupId: personGroupId, name: groupedFace);
-                    Console.WriteLine($"Create a person group person '{groupedFace}'.");
-
-                    // Add face to the person group person.
-                    foreach (var similarImage in personDictionary[groupedFace])
-                    {
-                        Console.WriteLine($"Add face to the person group person({groupedFace}) from image `{similarImage}`");
-                        PersistedFace face = await client.PersonGroupPerson.AddFaceFromUrlAsync(personGroupId, person.PersonId,
-                            $"{url}{similarImage}", similarImage);
-                    }
-                }
-
-
-
-                var persongroupId = Guid.NewGuid().ToString();
-                await FaceServiceHelper.CreatePersonGroupAsync(persongroupId,
-                                                        "Xamarin",
-                                                     WorkspaceKey);
-                await FaceServiceHelper.CreatePersonAsync(persongroupId, "Albert Einstein");
-
-                var personsInGroup = await FaceServiceHelper.GetPersonsAsync(persongroupId);
-
-                await FaceServiceHelper.AddPersonFaceAsync(persongroupId, personsInGroup[0].PersonId,
-                                                           "https://upload.wikimedia.org/wikipedia/commons/d/d3/Albert_Einstein_Head.jpg", null, null);
-
-                await FaceServiceHelper.TrainPersonGroupAsync(persongroupId);
-
-
-                IsFaceRegistered = true;
-
-
-            }
-            catch (FaceAPIException ex)
-
-            {
-                Console.WriteLine(ex.Message);
                 IsFaceRegistered = false;
 
+                // Create a PersonGroup to hold our images
+                // As of this writing Recogniton Model 3 is the most accurate model, so let's use that.
+                // https://docs.microsoft.com/en-us/azure/cognitive-services/face/face-api-how-to-topics/specify-recognition-model#detect-faces-with-specified-model
+                string personGroupId = Guid.NewGuid().ToString();
+                await faceClient.PersonGroup.CreateAsync(personGroupId, "Xamarin", recognitionModel: RecognitionModel.Recognition03);
+                Person p = await faceClient.PersonGroupPerson.CreateAsync(personGroupId, "Albert Einstein");
+
+                // Add a person with face detected by "detection_02" model
+                await faceClient.PersonGroupPerson.AddFaceFromUrlAsync(personGroupId, p.PersonId, "https://upload.wikimedia.org/wikipedia/commons/d/d3/Albert_Einstein_Head.jpg", DetectionModel.Detection02);
+
+                await faceClient.PersonGroup.TrainAsync(personGroupId);
+
+                IsFaceRegistered = true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
         }
-
+        /*
         public static async Task ProcessCameraCapture(ImageAnalyzer e)
         {
 
@@ -184,7 +151,7 @@ namespace CruzeBio.Shared
                 }
             }
         }
-
+        */
         static void DisplayMessage(string greetingsText)
         {
             greetingsCallback?.Invoke(greetingsText);

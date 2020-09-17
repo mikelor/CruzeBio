@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Camera\CameraSourcePreview.cs" />
     <Compile Include="Camera\GraphicOverlay.cs" />
+    <Compile Include="FaceGraphic.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
